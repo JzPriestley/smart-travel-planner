@@ -1,0 +1,45 @@
+.itinerary-panel {
+  padding: 1rem;
+  background: white;
+  border-left: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.itinerary-buttons {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.itinerary-button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.optimize-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.clear-btn {
+  background-color: #ccc;
+}
+
+.export-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.stop-item {
+  padding: 0.4rem;
+  margin-bottom: 0.3rem;
+  background: #f9f9f9;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+}
