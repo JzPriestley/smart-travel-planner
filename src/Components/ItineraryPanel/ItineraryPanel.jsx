@@ -111,7 +111,7 @@ export default function ItineraryPanel({ points, setPoints, notes, setNotes }) {
                     >
                       <span>
                         {/* Stop {i + 1}: {p.lat.toFixed(4)}, {p.lng.toFixed(4)} */}
-                        Stop {i + 1}: {p.name}
+                        Stop {i + 1}:  {p.name ? p.name : `Unnamed Location (${p.lat.toFixed(4)}, ${p.lng.toFixed(4)})`}
                       </span>
                       {notes[i] && <span>📝</span>}
                     </li>

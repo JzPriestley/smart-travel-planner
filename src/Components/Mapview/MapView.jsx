@@ -14,35 +14,40 @@ const defaultIcon = L.icon({
 
 export default function MapView({ points, setPoints, notes, setNotes }) {
   const [selectedIdx, setSelectedIdx] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleMarkerClick = (idx) => {
-    setSelectedIdx(idx);
-  };
+  const handleMarkerClick = (idx) => setSelectedIdx(idx);
 
   const handleNoteSave = (text) => {
     setNotes({ ...notes, [selectedIdx]: text });
     setSelectedIdx(null);
   };
 
+  // Handle map click to add marker
   function AddMarker({ onAdd }) {
     useMapEvents({
-        click(e) {
+      click(e) {
         const latlng = e.latlng;
         if (latlng?.lat != null && latlng?.lng != null) {
-            onAdd({ lat: latlng.lat, lng: latlng.lng, name: null }); // name null for clicks
+          onAdd({ lat: latlng.lat, lng: latlng.lng, name: null });
+        } else {
+          setErrorMsg("Invalid location clicked. Try again.");
+          setTimeout(() => setErrorMsg(""), 3000);
         }
-        },
+      },
     });
     return null;
+  }
+
+  // Add point safely from search
+  const handleSearchSelect = (place) => {
+    if (place?.lat != null && place?.lng != null) {
+      setPoints((prev) => [...prev, place]);
+    } else {
+      setErrorMsg("Invalid location selected from search.");
+      setTimeout(() => setErrorMsg(""), 3000);
     }
-
-
-  // Add a point safely from search
-//   const handleSearchSelect = (place) => {
-//     if (place?.lat != null && place?.lng != null) {
-//       setPoints((prev) => [...prev, place]);
-//     }
-//   };
+  };
 
   return (
     <>
@@ -50,6 +55,8 @@ export default function MapView({ points, setPoints, notes, setNotes }) {
         Click map to add a stop or Search a location <br />
         Click location marker on map to add a note 📝
       </div>
+
+      {errorMsg && <div className="map-error-toast">{errorMsg}</div>}
 
       <MapContainer
         center={[52.52, 13.405]}
@@ -59,23 +66,27 @@ export default function MapView({ points, setPoints, notes, setNotes }) {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <AddMarker onAdd={(p) => setPoints((prev) => [...prev, p])} />
 
-
-        // src/components/MapView.jsx (marker loop)
         {points.map((p, i) => {
-        // defensive guard
-        if (!p || typeof p.lat !== "number" || typeof p.lng !== "number") return null;
+          // Defensive guard
+          if (!p || typeof p.lat !== "number" || typeof p.lng !== "number") return null;
 
-        return (
-            <motion.div key={i} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.25 }}>
-            <Marker
-                position={[p.lat, p.lng]}                // <-- explicit array
+          return (
+            <motion.div
+              key={i}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Marker
+                position={[p.lat, p.lng]}
                 icon={createNumberedIcon(i + 1)}
                 eventHandlers={{ click: () => handleMarkerClick(i) }}
-            />
+              >
+                {p.name && <></>} {/* You can later add a Popup here */}
+              </Marker>
             </motion.div>
-        );
+          );
         })}
-
 
         {points.length > 1 && (
           <AnimatedPolyline points={points} color="#2196f3" weight={4} />
@@ -94,5 +105,3 @@ export default function MapView({ points, setPoints, notes, setNotes }) {
     </>
   );
 }
-
-
